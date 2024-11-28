@@ -1,0 +1,73 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body and Layout */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f5f5f5;
+  padding: 20px;
+  text-align: center;
+}
+
+button {
+  padding: 10px 15px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  margin: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 10px;
+  margin-top: 20px;
+  justify-items: center;
+}
+
+.heatmap-box {
+  width: 60px;
+  height: 60px;
+  border-radius: 5px;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.heatmap-box:hover {
+  transform: scale(1.1);
+}
+
+.song-count {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.2rem;
+  color: white;
+  font-weight: bold;
+}
+
+.tooltip {
+  position: absolute;
+  background-color: #333;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  display: none;
+  pointer-events: none;
+  z-index: 1000;
+}
