@@ -84,7 +84,7 @@ const App = () => {
                 <div
                   key={day}
                   className="day"
-                  data-heat={Math.round(minutes/30)}
+                  data-heat={Math.ceil(minutes/30)}
                   onClick={() => setSelectedDate(dayString)}
                   onMouseEnter={(e) => {
                     setTooltipPosition({ x: e.clientX, y: e.clientY });
