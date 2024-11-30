@@ -2,21 +2,41 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 
-// Function to process data and calculate the total msPlayed for each day
+// Function to process data and calculate total msPlayed and the most played track for each day
 const processData = (data) => {
   const heatmapData = {};
 
-  // Loop through years, months, and days in the data
   for (const year in data) {
     for (const month in data[year]) {
       for (const day in data[year][month]) {
         const dayData = data[year][month][day];
 
+        // Create a map to aggregate playtime for each track
+        const trackPlayTimeMap = {};
+
+        dayData.forEach((track) => {
+          if (trackPlayTimeMap[track.trackName]) {
+            trackPlayTimeMap[track.trackName] += track.msPlayed;
+          } else {
+            trackPlayTimeMap[track.trackName] = track.msPlayed;
+          }
+        });
+
         // Calculate total msPlayed for the day
-        const totalMsPlayed = dayData.reduce((acc, track) => acc + track.msPlayed, 0);
-        
-        // Store the total msPlayed for that day
-        heatmapData[`${year}-${month}-${day}`] = totalMsPlayed;
+        const totalMsPlayed = Object.values(trackPlayTimeMap).reduce((acc, time) => acc + time, 0);
+
+        // Find the most played track for the day by combined playtime
+        const mostPlayedTrack = Object.entries(trackPlayTimeMap).reduce(
+          (maxTrack, [trackName, msPlayed]) =>
+            msPlayed > maxTrack.msPlayed ? { trackName, msPlayed } : maxTrack,
+          { trackName: 'No Data', msPlayed: 0 }
+        );
+
+        heatmapData[`${year}-${month}-${day}`] = {
+          totalMsPlayed,
+          mostPlayedTrack: mostPlayedTrack.trackName,
+          mostPlayedMs: mostPlayedTrack.msPlayed,
+        };
       }
     }
   }
@@ -28,7 +48,7 @@ const processData = (data) => {
 const fetchData = async () => {
   try {
     const response = await axios.get('/data.json'); // Path to your JSON data file
-    return response.data; // Return the data directly from the response
+    return response.data;
   } catch (error) {
     console.error('Error fetching data:', error);
     return null;
@@ -36,61 +56,61 @@ const fetchData = async () => {
 };
 
 // Utility function to get the number of days in a month
-const getDaysInMonth = (month, year) => {
-  return new Date(year, month, 0).getDate();
-};
+const getDaysInMonth = (month, year) => new Date(year, month, 0).getDate();
 
 const App = () => {
   const [heatmapData, setHeatmapData] = useState({});
-  const [selectedDate, setSelectedDate] = useState('');
-  const [hoverData, setHoverData] = useState(null); // Store hover data for tooltips
-  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 }); // Track tooltip position
-  const [dataYear, setDataYear] = useState('2023'); // Set default year (2023)
-  
-  // Fetch and process the data on initial load
+  const [hoverData, setHoverData] = useState(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [dataYear, setDataYear] = useState('2023');
+
   useEffect(() => {
     const loadData = async () => {
       const data = await fetchData();
       if (data) {
-        const processedData = processData(data); // Process the data to get heatmap data
+        const processedData = processData(data);
         setHeatmapData(processedData);
       }
     };
     loadData();
   }, []);
 
-  // Function to generate calendar days with heatmap data
   const generateCalendar = () => {
     const months = [
       'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
+      'July', 'August', 'September', 'October', 'November', 'December',
     ];
 
     return months.map((month, monthIndex) => {
-      const daysInMonth = getDaysInMonth(monthIndex + 1, parseInt(dataYear)); // Get days in current month
+      const daysInMonth = getDaysInMonth(monthIndex + 1, parseInt(dataYear));
 
       return (
         <div className="month" key={monthIndex}>
-          <h3>{month} {dataYear}</h3> {/* Include the year in the header */}
+          <h3>{month} {dataYear}</h3>
           <div className="calendar">
-            {/* Generate all days for the month */}
             {Array.from({ length: daysInMonth }, (_, dayIndex) => {
               const day = dayIndex + 1;
               const dayString = `${dataYear}-${monthIndex + 1}-${day}`;
-              
-              const minutes = (( heatmapData[dayString] || 0) / 60000).toFixed(1); // Convert msPlayed to minutes for display (divide by 60000)
-              const heat = Math.ceil(minutes)/20; // Get heat (msPlayed total) for the day (default to 0)
+
+              const dayData = heatmapData[dayString] || {};
+              const minutes = ((dayData.totalMsPlayed || 0) / 60000).toFixed(1);
+              const heat = Math.ceil(minutes / 20);
+
               return (
                 <div
                   key={day}
                   className="day"
-                  data-heat={Math.ceil(minutes/30)}
-                  onClick={() => setSelectedDate(dayString)}
+                  data-heat={heat}
                   onMouseEnter={(e) => {
                     setTooltipPosition({ x: e.clientX, y: e.clientY });
-                    setHoverData({ date: `${month} ${day}, ${dataYear}`, time: minutes });
+                    setHoverData({
+                      date: `${month} ${day}, ${dataYear}`,
+                      time: minutes,
+                      mostPlayed: dayData.mostPlayedTrack || 'N/A',
+                      mostPlayedTime: ((dayData.mostPlayedMs || 0) / 60000).toFixed(1),
+                    });
                   }}
-                  onMouseLeave={() => setHoverData(null)} // Remove tooltip on mouse leave
+                  onMouseLeave={() => setHoverData(null)}
                 >
                   {day}
                 </div>
@@ -105,28 +125,28 @@ const App = () => {
   return (
     <div className="App">
       <h1>Heatmap Calendar</h1>
-      
-      {/* Year Selection */}
+
       <div className="year-selection">
         <button onClick={() => setDataYear('2023')}>2023</button>
         <button onClick={() => setDataYear('2024')}>2024</button>
       </div>
-      
+
       <div className="calendar-container">
         {generateCalendar()}
       </div>
 
-      {/* Tooltip for hover effect */}
       {hoverData && (
         <div
           className="tooltip"
           style={{
-            left: `${tooltipPosition.x + 10}px`, // Slight offset from cursor
-            top: `${tooltipPosition.y + 10}px`,  // Slight offset from cursor
+            left: `${tooltipPosition.x + 10}px`,
+            top: `${tooltipPosition.y + 10}px`,
           }}
         >
           <p><strong>{hoverData.date}</strong></p>
-          <p>{hoverData.time} minutes</p>
+          <p>{hoverData.time} minutes played</p>
+          <p>Most played: <strong>{hoverData.mostPlayed}</strong></p>
+          <p>Time: {hoverData.mostPlayedTime} minutes</p>
         </div>
       )}
     </div>

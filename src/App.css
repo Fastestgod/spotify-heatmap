@@ -1,14 +1,15 @@
-/* Basic styling for the app */
+/* Basic Styling for the App */
 .App {
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;
-  padding: 20px;
-  background-color: #f4f4f9;
+  padding: 40px 20px;
+  background-color: #f7f9fc;
 }
 
 h1 {
-  color: #333;
-  font-size: 2.5rem;
+  color: #2c3e50;
+  font-size: 3rem;
+  margin-bottom: 30px;
 }
 
 /* Year Selection Styling */
@@ -17,19 +18,20 @@ h1 {
 }
 
 .year-selection button {
-  padding: 10px;
-  margin: 0 5px;
+  padding: 12px 20px;
+  margin: 0 10px;
   font-size: 1rem;
-  background-color: #4CAF50;
+  background-color: #3498db;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 .year-selection button:hover {
-  background-color: #45a049;
+  background-color: #2980b9;
+  transform: scale(1.05);
 }
 
 /* Calendar Container */
@@ -38,101 +40,117 @@ h1 {
   grid-template-columns: repeat(4, 1fr);
   gap: 30px;
   justify-items: center;
-  margin-top: 20px;
+  margin-top: 40px;
 }
 
 /* Month Styling */
 .month {
   width: 100%;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.month:hover {
+  transform: translateY(-5px);
 }
 
 .month h3 {
-  font-size: 1.5rem;
-  color: #333;
-  margin-bottom: 10px;
+  font-size: 1.8rem;
+  color: #34495e;
+  margin-bottom: 15px;
 }
 
 /* Calendar Grid */
 .calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 /* Individual Day Styling */
 .day {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 3px;
-  border-radius: 4px;
-  font-size: 1.1rem;
+  border-radius: 8px;
+  font-size: 1.2rem;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  background-color: #ecf0f1;
+  transition: background-color 0.3s, transform 0.3s;
 }
 
 .day:hover {
-  background-color: rgba(0, 128, 0, 0.1); /* Light green on hover */
+  background-color: #1abc9c;
+  color: white;
   transform: scale(1.1);
 }
 
 /* Heatmap Day Styling */
 .day[data-heat='1'] {
-  background-color: #e0f7e0; /* Very light green for no data */
-}
-
-.day[data-heat='1'] {
-  background-color: #c8e6c9; /* Light pastel green */
+  background-color: #e0f7e0;
 }
 
 .day[data-heat='2'] {
-  background-color: #a5d6a7; /* Light green */
+  background-color: #a5d6a7;
 }
 
 .day[data-heat='3'] {
-  background-color: #81c784; /* Medium light green */
+  background-color: #81c784;
 }
 
 .day[data-heat='4'] {
-  background-color: #66bb6a; /* Medium green */
+  background-color: #66bb6a;
 }
 
 .day[data-heat='5'] {
-  background-color: #4caf50; /* Strong green */
+  background-color: #4caf50;
 }
 
 .day[data-heat='6'] {
-  background-color: #43a047; /* Darker green */
+  background-color: #43a047;
 }
 
 .day[data-heat='7'] {
-  background-color: #388e3c; /* Even darker green */
+  background-color: #388e3c;
 }
 
 .day[data-heat='8'] {
-  background-color: #2c6e2c; /* Very dark green */
+  background-color: #2c6e2c;
 }
 
 .day[data-heat='9'] {
-  background-color: #1b5e20; /* Maximum heat (darkest green) */
+  background-color: #1b5e20;
 }
 
 /* Tooltip Styling */
 .tooltip {
   position: absolute;
-  background-color: rgba(0, 128, 0, 0.7); /* Green color for the tooltip */
+  background-color: rgba(0, 128, 0, 0.8); /* Slightly darker green for better visibility */
   color: white;
-  padding: 8px;
-  border-radius: 5px;
+  padding: 12px 18px;
+  border-radius: 8px;
   font-size: 1rem;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transition: opacity 0.2s;
   pointer-events: none; /* Prevent the tooltip from interfering with mouse events */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  animation: fadeIn 0.3s forwards;
+}
+
+/* Tooltip Animation */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 /* Responsive Design for Smaller Screens */
@@ -143,7 +161,7 @@ h1 {
 
   .month {
     width: 80%;
-    padding: 10px;
+    padding: 15px;
   }
 }
 
@@ -154,5 +172,6 @@ h1 {
 
   .month {
     width: 95%;
+    padding: 12px;
   }
 }
