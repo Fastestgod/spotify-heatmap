@@ -124,7 +124,7 @@ const App = () => {
 
   return (
     <div className="App">
-      <h1>Heatmap Calendar</h1>
+      <h1>My {dataYear} Spotify Heatmap Calendar</h1>
 
       <div className="year-selection">
         <button onClick={() => setDataYear('2023')}>2023</button>
